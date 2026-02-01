@@ -703,7 +703,7 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             photo_url = response.json()["url"]
         except Exception as e:
             logger.error(f"Failed to fetch image from API: {e}")
-            photo_url = "https://graph.org/file/default_fallback_image.jpg"  # Fallback
+            photo_url = "https://i.postimg.cc/cC7txyhz/15.png"  # Fallback
 
         buttons = [
             [
