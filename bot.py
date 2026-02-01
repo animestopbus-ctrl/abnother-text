@@ -14,11 +14,11 @@ try:
 except ImportError:
     keep_alive = None
 logger = LOGGER(__name__)
+IST = timezone(timedelta(hours=5, minutes=30))  # Ensure IST is defined here
 # ==============================================================================
 # 🎨 CUSTOM BANNER (Printed in Terminal)
 # ==============================================================================
 LOGO = r"""
-
 
   ██████╗  ██╗  ██╗  █████╗  ███╗   ██╗ ██████╗   █████╗  ██╗      
   ██╔══██╗ ██║  ██║ ██╔══██╗ ████╗  ██║ ██╔══██╗ ██╔══██╗ ██║      
@@ -172,6 +172,7 @@ async def new_user_log(bot: Client, message: Message):
         f"<b>User ID:</b> <code>{user.id}</code>\n\n"
         f"<b>📅 Date:</b> <code>{now.strftime('%d %B %Y')}</code>\n"
         f"<b>🕒 Time:</b> <code>{now.strftime('%I:%M %p')} IST</code>\n\n"
+        f"<b>Developed by @RexBots_Official</b>"
     )
     try:
         await bot.send_message(
