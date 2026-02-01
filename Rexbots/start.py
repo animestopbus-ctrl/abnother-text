@@ -34,7 +34,7 @@ FREE_LIMIT_DAILY = 10                     # 10 Files per 24h
 
 # --- Payment Info ---
 UPI_ID = os.environ.get("UPI_ID", "your_upi@oksbi")
-QR_CODE = os.environ.get("QR_CODE", "https://graph.org/file/your_qr_code.jpg")
+QR_CODE = os.environ.get("QR_CODE", "https://graph.org/file/242b7f1b52743938d81f1.jpg")
 
 # --- Engagement ---
 REACTIONS = [
@@ -98,7 +98,7 @@ class script(object):
     ABOUT_TXT = """<b>ℹ️ About This Bot</b>
 
 <blockquote><b>╭────[ 🧩 Technical Stack ]────⍟</b>
-<b>├⍟ 🤖 Bot Name : <a href=http://t.me/THEUPDATEDGUYS_Bot>Save Restricted v2</a></b>
+<b>├⍟ 🤖 Bot Name : <a href=http://t.me/THEUPDATEDGUYS_Bot>Save Content</a></b>
 <b>├⍟ 👨‍💻 Developer : <a href=https://t.me/DmOwner>Ⓜ️ark</a></b> 
 <b>├⍟ 📚 Library : <a href='https://docs.pyrogram.org/'>Pyrogram Async</a></b>
 <b>├⍟ 🐍 Language : <a href='https://www.python.org/'>Python 3.11+</a></b> 
@@ -106,7 +106,6 @@ class script(object):
 <b>├⍟ 📡 Hosting : Dedicated High-Speed VPS</b>
 <b>╰───────────────⍟</b></blockquote>
 
-<b>Version: 2.0 | Last Updated: [Date]</b>
 """
 
     PREMIUM_TEXT = """<b>💎 Premium Membership Plans</b>
@@ -144,7 +143,7 @@ class script(object):
 </blockquote>
 """
 
-    CAPTION = """<b><a href="https://t.me/THEUPDATEDGUYS">{file_name}</a></b>\n\n<b>⚜️ Powered By : <a href="https://t.me/THEUPDATEDGUYS">THE UPDATED GUYS 😎</a></b>"""
+    CAPTION = """<b><a href="https://t.me/THEUPDATEDGUYS"></a></b>\n\n<b>⚜️ Powered By : <a href="https://t.me/THEUPDATEDGUYS">THE UPDATED GUYS 😎</a></b>"""
 
     LIMIT_REACHED = """<b>🚫 Daily Limit Exceeded</b>
 
@@ -635,24 +634,27 @@ async def handle_restricted_content(client: Client, acc, message: Message, chat_
 # ==============================================================================
 # 🖱️ CALLBACK QUERY HANDLER (Upgraded Buttons)
 # ==============================================================================
-
 @Client.on_callback_query()
 async def button_callbacks(client: Client, callback_query: CallbackQuery):
     data = callback_query.data
     message = callback_query.message
-
+    if not message: return  # h
     # --- DEV INFO ---
+   # --- DEVELOPER INFO ---
     if data == "dev_info":
-        await callback_query.answer("Mind behind this code: DumpDev1 and DumpDev2", show_alert=True)
-
+        await callback_query.answer(
+            text="👨‍💻 Mind Behind This Bot:\n• @DmOwner\n• @akaza7902",
+            show_alert=True
+        )
     # --- CHANNELS INFO ---
     elif data == "channels_info":
-        await callback_query.answer("Our channels: DumpChannel1 and DumpChannel2", show_alert=True)
-
+        await callback_query.answer(
+            text="📢 Official Channels:\n• @ReX_update\n• @THEUPDATEDGUYS\n\nStay updated for new features!",
+            show_alert=True
+        )
     # --- SETTINGS MENU ---
     elif data == "settings_btn":
         await settings_panel(client, callback_query)
-
     # --- PREMIUM MENU ---
     elif data == "buy_premium":
         buttons = [
@@ -663,12 +665,11 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             chat_id=message.chat.id,
             message_id=message.id,
             media=InputMediaPhoto(
-                media=SUBSCRIPTION, 
+                media=SUBSCRIPTION,
                 caption=script.PREMIUM_TEXT.format(callback_query.from_user.mention, UPI_ID, QR_CODE)
             ),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
-
     # --- HELP MENU ---
     elif data == "help_btn":
         buttons = [[InlineKeyboardButton("⬅️ Back to Home", callback_data="start_btn")]]
@@ -679,7 +680,7 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode=enums.ParseMode.HTML
         )
-    
+   
     # --- ABOUT MENU ---
     elif data == "about_btn":
         buttons = [[InlineKeyboardButton("⬅️ Back to Home", callback_data="start_btn")]]
@@ -690,7 +691,6 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode=enums.ParseMode.HTML
         )
-
     # --- HOME / START MENU ---
     elif data == "start_btn":
         bot = await client.get_me()
@@ -703,8 +703,7 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             photo_url = response.json()["url"]
         except Exception as e:
             logger.error(f"Failed to fetch image from API: {e}")
-            photo_url = "https://i.postimg.cc/cC7txyhz/15.png"  # Fallback
-
+            photo_url = "https://i.postimg.cc/cC7txyhz/15.png" # Fallback
         buttons = [
             [
                 InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium"),
@@ -724,19 +723,16 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             chat_id=message.chat.id,
             message_id=message.id,
             media=InputMediaPhoto(
-                media=photo_url,  # Use API-fetched photo
+                media=photo_url, # Use API-fetched photo
                 caption=script.START_TXT.format(callback_query.from_user.mention, bot.username, bot.first_name)
             ),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
-
     # --- CLOSE BUTTON ---
     elif data == "close_btn":
         await message.delete()
-
     # --- SETTINGS SUB-MENUS ---
     elif data in ["cmd_list_btn", "user_stats_btn", "dump_chat_btn", "thumb_btn", "caption_btn"]:
         # Logic is handled by settings.py, this ensures the spinning icon stops
         pass
-
     await callback_query.answer()
