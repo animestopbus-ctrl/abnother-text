@@ -4,6 +4,7 @@ TgCrypto
 
 # --- Asynchronous & Networking ---
 aiohttp==3.9.5
+requests
 
 # --- Database & Utilities ---
 motor
