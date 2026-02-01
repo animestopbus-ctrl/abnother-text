@@ -3,7 +3,6 @@ from pyrogram import Client, filters, enums
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from database.db import db
 from Rexbots.strings import COMMANDS_TXT
-
 # ======================================================
 # /settings - Enhanced Professional Settings Menu
 # ======================================================
@@ -13,11 +12,9 @@ async def settings_menu(client: Client, message: Message):
     # Ensure user exists (Safe Call)
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, message.from_user.first_name)
-
     # Fetch real status
     is_premium = await db.check_premium(user_id)
     premium_badge = "💎 Premium Member" if is_premium else "👤 Free User"
-
     buttons = InlineKeyboardMarkup([
         [InlineKeyboardButton("📜 Commands List", callback_data="cmd_list_btn")],
         [InlineKeyboardButton("📊 My Usage Stats", callback_data="user_stats_btn")],
@@ -28,7 +25,6 @@ async def settings_menu(client: Client, message: Message):
         ],
         [InlineKeyboardButton("❌ Close Menu", callback_data="close_btn")]
     ])
-
     text = (
         f"<b>⚙️ Settings Panel</b>\n"
         f"━━━━━━━━━━━━━━━━━━\n"
@@ -36,9 +32,7 @@ async def settings_menu(client: Client, message: Message):
         f"<b>User ID:</b> <code>{user_id}</code>\n\n"
         f"<i>Select an option below to customize your experience.</i>"
     )
-
     await message.reply_text(text, reply_markup=buttons, parse_mode=enums.ParseMode.HTML)
-
 # ======================================================
 # /commands - Direct Access to Commands List
 # ======================================================
@@ -47,14 +41,12 @@ async def direct_commands(client: Client, message: Message):
     buttons = InlineKeyboardMarkup([
         [InlineKeyboardButton("⚙️ Open Settings", callback_data="settings_back_btn"), InlineKeyboardButton("❌ Close", callback_data="close_btn")]
     ])
-
     await message.reply_text(
         COMMANDS_TXT,
         reply_markup=buttons,
         parse_mode=enums.ParseMode.HTML,
         disable_web_page_preview=True
     )
-
 # ======================================================
 # /setchat - Set or Clear Dump Chat
 # ======================================================
@@ -63,7 +55,6 @@ async def set_dump_chat(client: Client, message: Message):
     user_id = message.from_user.id
     if not await db.is_user_exist(user_id):
         await db.add_user(user_id, message.from_user.first_name)
-
     if len(message.command) < 2:
         return await message.reply_text(
             "<b>🗑 Set Dump Chat</b>\n\n"
@@ -73,13 +64,10 @@ async def set_dump_chat(client: Client, message: Message):
             "<i>Example: /setchat -1001234567890</i>",
             parse_mode=enums.ParseMode.HTML
         )
-
     arg = message.command[1].strip().lower()
-
     if arg == "clear":
         await db.set_dump_chat(user_id, None)
         return await message.reply_text("✅ <b>Dump Chat Cleared Successfully</b>", parse_mode=enums.ParseMode.HTML)
-
     try:
         chat_id = int(arg)
         try:
@@ -87,7 +75,6 @@ async def set_dump_chat(client: Client, message: Message):
             chat_title = chat.title or "Private Chat"
         except:
             chat_title = "Unknown Chat"
-
         await db.set_dump_chat(user_id, chat_id)
         await message.reply_text(
             f"✅ <b>Dump Chat Set Successfully</b>\n\n"
@@ -99,7 +86,6 @@ async def set_dump_chat(client: Client, message: Message):
         await message.reply_text("❌ <b>Invalid Chat ID</b>\n\n<i>Must be a number (e.g., -1001234567890)</i>", parse_mode=enums.ParseMode.HTML)
     except Exception as e:
         await message.reply_text(f"❌ <b>Unable to Access Chat</b>\n<i>{e}</i>", parse_mode=enums.ParseMode.HTML)
-
 # ======================================================
 # Callbacks - Full Settings Navigation
 # ======================================================
@@ -107,10 +93,9 @@ async def set_dump_chat(client: Client, message: Message):
 async def settings_callbacks(client: Client, callback_query: CallbackQuery):
     data = callback_query.data
     user_id = callback_query.from_user.id
-    
+   
     # Common back/close buttons
     back_close = [[InlineKeyboardButton("⬅️ Back", callback_data="settings_back_btn"), InlineKeyboardButton("❌ Close", callback_data="close_btn")]]
-
     if data == "cmd_list_btn":
         await callback_query.edit_message_text(
             COMMANDS_TXT,
@@ -118,7 +103,6 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
             parse_mode=enums.ParseMode.HTML,
             disable_web_page_preview=True
         )
-
     elif data == "dump_chat_btn":
         current = await db.get_dump_chat(user_id)
         if current:
@@ -141,7 +125,6 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
                 "<i>Use /setchat &lt;chat_id&gt; to enable forwarding.</i>"
             )
         await callback_query.edit_message_text(text, reply_markup=InlineKeyboardMarkup(back_close), parse_mode=enums.ParseMode.HTML)
-
     elif data == "thumb_btn":
         thumb = await db.get_thumbnail(user_id)
         if thumb and os.path.exists(thumb):
@@ -158,7 +141,6 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
                 reply_markup=InlineKeyboardMarkup(back_close),
                 parse_mode=enums.ParseMode.HTML
             )
-
     elif data == "caption_btn":
         caption = await db.get_caption(user_id)
         if caption:
@@ -177,12 +159,11 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
                 "<i>Supports {filename} and {size} placeholders.</i>"
             )
         await callback_query.edit_message_text(text, reply_markup=InlineKeyboardMarkup(back_close), parse_mode=enums.ParseMode.HTML)
-
     elif data == "user_stats_btn":
         # Fetch real stats from DB
         is_premium = await db.check_premium(user_id)
         user_data = await db.col.find_one({'id': int(user_id)})
-        
+       
         if is_premium:
             limit_text = "♾️ Unlimited"
             usage_text = "Ignored (Premium)"
@@ -192,7 +173,6 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
             used = user_data.get('daily_usage', 0)
             limit_text = f"{daily_limit} Files / 24h"
             usage_text = f"{used} / {daily_limit}"
-
         text = (
             f"<b>📊 My Usage Statistics</b>\n\n"
             f"<b>Plan:</b> {'💎 Premium' if is_premium else '👤 Free'}\n"
@@ -201,12 +181,11 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
             f"<i>Upgrade to Premium for unlimited downloads!</i>"
         )
         await callback_query.edit_message_text(text, reply_markup=InlineKeyboardMarkup(back_close), parse_mode=enums.ParseMode.HTML)
-
     elif data == "settings_back_btn":
         # Re-render main menu
         is_premium = await db.check_premium(user_id)
         premium_badge = "💎 Premium Member" if is_premium else "👤 Free User"
-        
+       
         buttons = InlineKeyboardMarkup([
             [InlineKeyboardButton("📜 Commands List", callback_data="cmd_list_btn")],
             [InlineKeyboardButton("📊 My Usage Stats", callback_data="user_stats_btn")],
@@ -217,7 +196,7 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
             ],
             [InlineKeyboardButton("❌ Close Menu", callback_data="close_btn")]
         ])
-        
+       
         text = (
             f"<b>⚙️ Settings Panel</b>\n"
             f"━━━━━━━━━━━━━━━━━━\n"
@@ -225,10 +204,8 @@ async def settings_callbacks(client: Client, callback_query: CallbackQuery):
             f"<b>User ID:</b> <code>{user_id}</code>\n\n"
             f"<i>Select an option below to customize your experience.</i>"
         )
-        
+       
         await callback_query.edit_message_text(text, reply_markup=buttons, parse_mode=enums.ParseMode.HTML)
-
     elif data == "close_btn":
         await callback_query.message.delete()
-
     await callback_query.answer()
