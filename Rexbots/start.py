@@ -57,18 +57,17 @@ class script(object):
     Upgraded with professional formatting: consistent bold labels, structured sections, modern emojis, and enhanced readability using blockquotes and code blocks.
     """
     
-    START_TXT = """<b>🌟 Salutations, Wanderer {},</b>
+    START_TXT = """<b>👋 Hello {},</b>
 
-<b>🤖 Behold <a href=https://t.me/{}>{}</a>, channeling the essence of Chisa from Wuthering Waves!</b>
-<i>Your shadowy companion for safeguarding restricted treasures, styled as the graceful resonator with ethereal silver locks and an aura of intrigue.</i>
+<b>🤖 I am <a href=https://t.me/{}>{}</a></b>
+<i>Your Professional Restricted Content Saver Bot.</i>
 
-<blockquote expandable><b>🌌 Void Sentinel Diagnostics:</b>
-<b>🟢 Resonance: Primed and Harmonized</b>
-<b>⚡ Surge: Hyper-Accelerated 10x Dynamics</b>
-<b>🔒 Veil: Unbreachable Quantum Shielding</b>
-<b>🔄 Stability: 99.9% Eternal Flux Guarantee</b></blockquote>
+<blockquote><b>🚀 System Status: 🟢 Online</b>
+<b>⚡ Performance: 10x High-Speed Processing</b>
+<b>🔐 Security: End-to-End Encrypted</b>
+<b>📊 Uptime: 99.9% Guaranteed</b></blockquote>
 
-<b>🔮 Prepared to unravel the mysteries? Choose your destiny below:</b>
+<b>👇 Select an Option Below to Get Started:</b>
 """
 
     HELP_TXT = """<b>📚 Comprehensive Help & User Guide</b>
@@ -305,18 +304,19 @@ async def send_start(client: Client, message: Message):
         logger.error(f"Failed to fetch image from API: {e}")
         photo_url = "https://graph.org/file/default_fallback_image.jpg"  # Fallback
 
-    # Updated button layout: Single-column for streamlined mobile UX, removed some text by making status buttons (info as callback alerts)
     buttons = [
-        [InlineKeyboardButton("🟢 Resonance Status", callback_data="status_resonance")],
-        [InlineKeyboardButton("⚡ Surge Status", callback_data="status_surge")],
-        [InlineKeyboardButton("🔒 Veil Status", callback_data="status_veil")],
-        [InlineKeyboardButton("🔄 Stability Status", callback_data="status_stability")],
-        [InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium")],
-        [InlineKeyboardButton("🆘 Help & Guide", callback_data="help_btn")],
-        [InlineKeyboardButton("⚙️ Settings Panel", callback_data="settings_btn")],
-        [InlineKeyboardButton("ℹ️ About Bot", callback_data="about_btn")],
-        [InlineKeyboardButton('📢 Official Channel', url='https://t.me/RexBots_Official')],
-        [InlineKeyboardButton('👨‍💻 Developers', callback_data="dev_info")]
+        [
+            InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium"),
+            InlineKeyboardButton("🆘 Help & Guide", callback_data="help_btn")
+        ],
+        [
+            InlineKeyboardButton("⚙️ Settings Panel", callback_data="settings_btn"),
+            InlineKeyboardButton("ℹ️ About Bot", callback_data="about_btn")
+        ],
+        [
+            InlineKeyboardButton('📢 Channels', callback_data="channels_info"),
+            InlineKeyboardButton('👨‍💻 Developers', callback_data="dev_info")
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(buttons)
 
@@ -324,7 +324,7 @@ async def send_start(client: Client, message: Message):
     await client.send_photo(
         chat_id=message.chat.id,
         photo=photo_url,
-        caption=script.START_TXT.format(message.from_user.mention, bot.username, bot.first_name).replace("<blockquote expandable><b>🌌 Void Sentinel Diagnostics:</b>\n<b>🟢 Resonance: Primed and Harmonized</b>\n<b>⚡ Surge: Hyper-Accelerated 10x Dynamics</b>\n<b>🔒 Veil: Unbreachable Quantum Shielding</b>\n<b>🔄 Stability: 99.9% Eternal Flux Guarantee</b></blockquote>", ""),  # Removed text, use buttons
+        caption=script.START_TXT.format(message.from_user.mention, bot.username, bot.first_name),
         reply_markup=reply_markup,
         reply_to_message_id=message.id,
         parse_mode=enums.ParseMode.HTML
@@ -641,19 +641,13 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
     data = callback_query.data
     message = callback_query.message
 
-    # --- STATUS BUTTONS (Replaced text) ---
-    if data == "status_resonance":
-        await callback_query.answer("Resonance: Primed and Harmonized", show_alert=True)
-    elif data == "status_surge":
-        await callback_query.answer("Surge: Hyper-Accelerated 10x Dynamics", show_alert=True)
-    elif data == "status_veil":
-        await callback_query.answer("Veil: Unbreachable Quantum Shielding", show_alert=True)
-    elif data == "status_stability":
-        await callback_query.answer("Stability: 99.9% Eternal Flux Guarantee", show_alert=True)
-
     # --- DEV INFO ---
-    elif data == "dev_info":
+    if data == "dev_info":
         await callback_query.answer("Mind behind this code: DumpDev1 and DumpDev2", show_alert=True)
+
+    # --- CHANNELS INFO ---
+    elif data == "channels_info":
+        await callback_query.answer("Our channels: DumpChannel1 and DumpChannel2", show_alert=True)
 
     # --- SETTINGS MENU ---
     elif data == "settings_btn":
@@ -711,18 +705,19 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             logger.error(f"Failed to fetch image from API: {e}")
             photo_url = "https://graph.org/file/default_fallback_image.jpg"  # Fallback
 
-        # Updated button layout: Matches the new single-column streamlined design
         buttons = [
-            [InlineKeyboardButton("🟢 Resonance Status", callback_data="status_resonance")],
-            [InlineKeyboardButton("⚡ Surge Status", callback_data="status_surge")],
-            [InlineKeyboardButton("🔒 Veil Status", callback_data="status_veil")],
-            [InlineKeyboardButton("🔄 Stability Status", callback_data="status_stability")],
-            [InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium")],
-            [InlineKeyboardButton("🆘 Help & Guide", callback_data="help_btn")],
-            [InlineKeyboardButton("⚙️ Settings Panel", callback_data="settings_btn")],
-            [InlineKeyboardButton("ℹ️ About Bot", callback_data="about_btn")],
-            [InlineKeyboardButton('📢 Official Channel', url='https://t.me/RexBots_Official')],
-            [InlineKeyboardButton('👨‍💻 Developers', callback_data="dev_info")]
+            [
+                InlineKeyboardButton("💎 Buy Premium", callback_data="buy_premium"),
+                InlineKeyboardButton("🆘 Help & Guide", callback_data="help_btn")
+            ],
+            [
+                InlineKeyboardButton("⚙️ Settings Panel", callback_data="settings_btn"),
+                InlineKeyboardButton("ℹ️ About Bot", callback_data="about_btn")
+            ],
+            [
+                InlineKeyboardButton('📢 Channels', callback_data="channels_info"),
+                InlineKeyboardButton('👨‍💻 Developers', callback_data="dev_info")
+            ]
         ]
         # Rotate Image
         await client.edit_message_media(
@@ -730,7 +725,7 @@ async def button_callbacks(client: Client, callback_query: CallbackQuery):
             message_id=message.id,
             media=InputMediaPhoto(
                 media=photo_url,  # Use API-fetched photo
-                caption=script.START_TXT.format(callback_query.from_user.mention, bot.username, bot.first_name).replace("<blockquote expandable><b>🌌 Void Sentinel Diagnostics:</b>\n<b>🟢 Resonance: Primed and Harmonized</b>\n<b>⚡ Surge: Hyper-Accelerated 10x Dynamics</b>\n<b>🔒 Veil: Unbreachable Quantum Shielding</b>\n<b>🔄 Stability: 99.9% Eternal Flux Guarantee</b></blockquote>", "")  # Removed text
+                caption=script.START_TXT.format(callback_query.from_user.mention, bot.username, bot.first_name)
             ),
             reply_markup=InlineKeyboardMarkup(buttons)
         )
